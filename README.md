@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🩺 SymptoSense AI Engine
 
 ### *AI-Powered Multilingual Health Assessment & Risk Scoring*
@@ -88,3 +89,7 @@ For more details, see [TEAM_INTEGRATION_GUIDE.md](./docs/TEAM_INTEGRATION_GUIDE.
 ---
 
 Developed with ❤️ for Global Health Accessibility.
+=======
+# SymptoSense-AI-Engine
+AI-powered multilingual symptom triage engine with voice interaction
+>>>>>>> 97cb72a6d9478928ddfeb0e8da5e4feb6015d210
