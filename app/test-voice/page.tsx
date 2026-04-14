@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { AIQuestionEngine } from "@/components/ai-question-engine/AIQuestionEngine";
-import type { AnswerMap } from "@/components/ai-question-engine/types";
+import type { FinalAssessmentPayload } from "@/components/ai-question-engine/types";
 
 export default function TestVoicePage() {
-  const [completeData, setCompleteData] = useState<AnswerMap | null>(null);
+  const [completeData, setCompleteData] = useState<FinalAssessmentPayload | null>(null);
   const [lastEvent, setLastEvent] = useState<string>("System Initialized");
   const [apiLogs, setApiLogs] = useState<{ type: string; status: string; timestamp: string }[]>([]);
 
@@ -28,7 +28,7 @@ export default function TestVoicePage() {
     return () => { window.fetch = originalFetch; };
   }, []);
 
-  const handleComplete = (data: AnswerMap) => {
+  const handleComplete = (data: FinalAssessmentPayload) => {
     setCompleteData(data);
     setLastEvent("Analysis Complete");
   };
@@ -50,8 +50,8 @@ export default function TestVoicePage() {
 
           <div className="bg-white/5 rounded-3xl p-1 border border-white/10 shadow-2xl">
             <AIQuestionEngine 
-              symptom="fever" 
-              language="en" 
+              initialSymptom="fever" 
+              defaultLanguage="en" 
               onComplete={handleComplete} 
             />
           </div>

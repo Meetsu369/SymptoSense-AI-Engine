@@ -198,7 +198,7 @@ export const AIQuestionEngine = ({
           <h3 className="text-2xl font-black text-white">Assessment Finalized</h3>
           <p className="text-white/40 text-sm font-medium">Your data is ready for the risk scoring engine.</p>
         </div>
-        <button label="Reset" onClick={engine.reset} className="text-indigo-400 text-xs font-black uppercase tracking-widest hover:text-indigo-300 transition-colors">
+        <button aria-label="Reset" onClick={engine.reset} className="text-indigo-400 text-xs font-black uppercase tracking-widest hover:text-indigo-300 transition-colors">
           Restart Assessment
         </button>
       </div>

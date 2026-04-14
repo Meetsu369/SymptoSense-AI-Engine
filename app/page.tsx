@@ -5,15 +5,16 @@
 
 import { useState } from "react";
 import { AIQuestionEngine } from "@/components/ai-question-engine/AIQuestionEngine";
+import type { FinalAssessmentPayload } from "@/components/ai-question-engine/types";
 
 export default function HomePage() {
-  const [result, setResult] = useState<Record<string, string> | null>(null);
+  const [result, setResult] = useState<FinalAssessmentPayload | null>(null);
   const [activeSymptom, setActiveSymptom] = useState("fever");
   const [key, setKey] = useState(0); // remount engine on reset
 
   const symptoms = ["fever", "headache", "cough", "fatigue", "chest pain", "breathing difficulty"];
 
-  function handleComplete(data: Record<string, string>) {
+  function handleComplete(data: FinalAssessmentPayload) {
     setResult(data);
   }
 
@@ -64,8 +65,8 @@ export default function HomePage() {
       {/* Engine */}
       <AIQuestionEngine
         key={key}
-        symptom={activeSymptom}
-        language="en"
+        initialSymptom={activeSymptom}
+        defaultLanguage="en"
         onComplete={handleComplete}
       />
 

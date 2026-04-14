@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AIQuestionEngine } from "@/components/ai-question-engine/AIQuestionEngine";
 import { useSarvamTranslate } from "@/components/ai-question-engine/useSarvamTranslate";
 import { useSarvamTTS } from "@/components/ai-question-engine/useSarvamTTS";
-import type { RiskAnalysis, AnswerMap } from "@/components/ai-question-engine/types";
+import type { RiskAnalysis, FinalAssessmentPayload } from "@/components/ai-question-engine/types";
 
 /**
  * PRODUCTION INTEGRATION TEST PAGE
@@ -13,7 +13,7 @@ import type { RiskAnalysis, AnswerMap } from "@/components/ai-question-engine/ty
 
 export default function IntegrationTestPage() {
   const [activeSymptom, setActiveSymptom] = useState("fever");
-  const [result, setResult] = useState<AnswerMap | null>(null);
+  const [result, setResult] = useState<FinalAssessmentPayload | null>(null);
   const [analysis, setAnalysis] = useState<RiskAnalysis | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [key, setKey] = useState(0);
@@ -21,7 +21,7 @@ export default function IntegrationTestPage() {
   const { translate } = useSarvamTranslate();
   const { speak } = useSarvamTTS();
 
-  const handleComplete = async (data: AnswerMap) => {
+  const handleComplete = async (data: FinalAssessmentPayload) => {
     console.log("[IntegrationTest] Survey Complete! Final Data:", data);
     setResult(data);
     

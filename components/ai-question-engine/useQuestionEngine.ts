@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { fetchNextQuestion } from "./services/questionService";
-import { matchVoiceToOption } from "./utils/matchVoiceInput";
+import { fetchNextQuestion } from "@/services/questionService";
+import { matchVoiceToOption } from "@/utils/matchVoiceInput";
 import { useSarvamTTS } from "./useSarvamTTS";
 import { useSarvamSTT } from "./useSarvamSTT";
 import { useSarvamTranslate } from "./useSarvamTranslate";
@@ -108,10 +108,12 @@ export function useQuestionEngine({
     const speechText = currentQuestion.options.map(o => o.speech?.[language]).filter(Boolean);
     const optionsToSpeak = speechText.length === opts.length ? speechText : opts;
     
-    const lastOpt = optionsToSpeak.pop();
+    // Non-mutating: use slice instead of pop to avoid corrupting the array
+    const lastOpt = optionsToSpeak[optionsToSpeak.length - 1];
+    const restOpts = optionsToSpeak.slice(0, -1);
     const combinedText = language === "en"
-      ? `${text}. You can choose: ${optionsToSpeak.join("... ")}, or ${lastOpt}.`
-      : `${text}. आप चुन सकते हैं: ${optionsToSpeak.join("... ")}, या ${lastOpt}.`;
+      ? `${text}. You can choose: ${restOpts.join("... ")}, or ${lastOpt}.`
+      : `${text}. आप चुन सकते हैं: ${restOpts.join("... ")}, या ${lastOpt}.`;
 
     if (combinedText === lastSpokenRef.current) return;
     lastSpokenRef.current = combinedText;
@@ -133,7 +135,7 @@ export function useQuestionEngine({
       const nextStep = currentStep + 1;
       if (nextStep >= MAX_STEPS || isFlowComplete(nextStep, initialSymptom)) {
         setIsComplete(true);
-        onComplete(buildFinalOutput(initialSymptom, updatedAnswers));
+        onComplete(buildFinalOutput(initialSymptom, updatedAnswers, language));
       } else {
         setCurrentStep(nextStep);
         setSelectedOption(null);

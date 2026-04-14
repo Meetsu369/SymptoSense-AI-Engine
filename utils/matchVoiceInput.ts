@@ -1,4 +1,4 @@
-import type { QuestionStep, Language } from "../types";
+import type { QuestionStep, Language } from "@/components/ai-question-engine/types";
 
 /**
  * SYNONYM MAPPING
@@ -74,13 +74,14 @@ export function matchVoiceToOption(
 
   // A. Numerical Matching (Highest Priority)
   const numLookup: Record<string, number> = {
-    "1": 0, "one": 0, "first": 0, "pekla": 0, "ek": 0, "एक": 0, "पहला": 0,
+    "1": 0, "one": 0, "first": 0, "pehla": 0, "ek": 0, "एक": 0, "पहला": 0,
     "2": 1, "two": 1, "second": 1, "do": 1, "dusra": 1, "दो": 1, "दूसरा": 1,
     "3": 2, "three": 2, "third": 2, "teen": 2, "tisra": 2, "तीन": 2, "तीसरा": 2,
     "4": 3, "four": 3, "fourth": 3, "char": 3, "chautha": 3, "चार": 3, "चौथा": 3,
   };
 
-  if (numLookup[raw]) {
+  // numLookup values are indices (0-based), so check with !== undefined (0 is valid!)
+  if (numLookup[raw] !== undefined) {
     const idx = numLookup[raw];
     if (idx < step.options.length) {
       console.log(`[STT Match] Numerical: "${raw}" matched index ${idx}`);
@@ -111,8 +112,9 @@ export function matchVoiceToOption(
     } 
     // 2. Partial Match (90% if word-boundary match, 70% if substring)
     else if (normalized.includes(val) || normalized.includes(labelEn) || normalized.includes(labelHi)) {
-       // Check if it's a stand-alone word
-       const regex = new RegExp(`\\b(${val}|${labelEn})\\b`, 'i');
+       // Escape regex special characters before constructing RegExp
+       const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+       const regex = new RegExp(`\\b(${escapeRegex(val)}|${escapeRegex(labelEn)})\\b`, 'i');
        confidence = regex.test(normalized) ? 0.9 : 0.7;
     }
     // 3. Simple Fuzzy / Overlap Match

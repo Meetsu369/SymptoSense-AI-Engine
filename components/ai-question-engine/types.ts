@@ -29,10 +29,18 @@ export interface QuestionContext {
 
 export type AnswerMap = Record<string, string>;
 
+export interface FinalAssessmentPayload {
+  symptom: string;
+  severity: string;
+  duration: string;
+  additionalSymptoms: string[];
+  language: string;
+}
+
 export interface EngineProps {
   initialSymptom: string;
   defaultLanguage?: Language;
-  onComplete: (data: AnswerMap) => void;
+  onComplete: (data: FinalAssessmentPayload) => void;
 }
 
 /**

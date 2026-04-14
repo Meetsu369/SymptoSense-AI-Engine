@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # 🩺 SymptoSense AI Engine
 
 ### *AI-Powered Multilingual Health Assessment & Risk Scoring*
@@ -20,7 +19,6 @@ SymptoSense is a state-of-the-art health triage engine designed to provide immed
 ### 🛡️ 3. Safety-First Risk Scoring
 - **Red Flag Detection**: Immediate, high-contrast emergency alerts for critical symptoms (e.g., chest pain, breathing difficulty).
 - **Deterministic Scoring**: Clinical urgency is calculated using a rule-based engine, ensuring reliability and medical safety.
-- **Health Narratives**: Generates a "Health Story" summary alongside the clinical breakdown for easier understanding.
 
 ### 🎨 4. Premium Plug-and-Play UI
 - **Modular Component**: The `AIQuestionEngine` can be integrated into any React/Next.js application as a self-contained module.
@@ -40,7 +38,11 @@ npm install
 ### 2. Configure Environment
 Create a `.env.local` file (referencing `.env.example`):
 ```bash
+# Sarvam AI (TTS/STT/Translate)
 SARVAM_API_KEY=your_key_here
+SARVAM_BASE_URL=https://api.sarvam.ai
+
+# Google Gemini (Question Generation)
 GEMINI_API_KEY=your_key_here
 ```
 
@@ -61,9 +63,9 @@ import { AIQuestionEngine } from "@/components/ai-question-engine/AIQuestionEngi
 
 <AIQuestionEngine
   initialSymptom="fever"
-  defaultLanguage="hi"
+  defaultLanguage="en"
   onComplete={(data) => {
-    // Send structured JSON to your backend or risk analyzer
+    // Returns: { symptom, severity, duration, additionalSymptoms, language }
     console.log("Assessment Data:", data);
   }}
 />
@@ -74,22 +76,11 @@ For more details, see [TEAM_INTEGRATION_GUIDE.md](./docs/TEAM_INTEGRATION_GUIDE.
 ---
 
 ## 🛠 Tech Stack
-- **Framework**: Next.js 14 (App Router)
+- **Framework**: Next.js (App Router)
 - **AI Models**: Google Gemini 1.5 Flash (Question Generation), Sarvam AI (Voice & Translation)
-- **Styling**: Tailwind CSS
-- **State Management**: React Hooks (Custom State Machine)
-
----
-
-## 📈 Future Scope
-- **Advanced Bio-Metrics**: Integration with wearable health data.
-- **Offline Modes**: Full Edge-AI deployment for remote rural areas.
-- **Clinical Dashboard**: Real-time visualization for medical professionals.
+- **Styling**: Vanilla CSS + Utility classes
+- **State Management**: Custom Hook based State Machine
 
 ---
 
 Developed with ❤️ for Global Health Accessibility.
-=======
-# SymptoSense-AI-Engine
-AI-powered multilingual symptom triage engine with voice interaction
->>>>>>> 97cb72a6d9478928ddfeb0e8da5e4feb6015d210

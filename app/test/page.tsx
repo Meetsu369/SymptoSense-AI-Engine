@@ -7,7 +7,8 @@ import { useState } from "react";
 import { useSarvamTTS } from "@/components/ai-question-engine/useSarvamTTS";
 import { useSarvamSTT } from "@/components/ai-question-engine/useSarvamSTT";
 import { useSarvamTranslate } from "@/components/ai-question-engine/useSarvamTranslate";
-import { getNextQuestion, getTotalSteps, buildFinalOutput, matchVoiceToOption } from "@/components/ai-question-engine/questionFlow";
+import { getNextQuestion, getTotalSteps, buildFinalOutput } from "@/components/ai-question-engine/questionFlow";
+import { matchVoiceToOption } from "@/utils/matchVoiceInput";
 
 function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -51,7 +52,7 @@ export default function TestPage() {
 
   // ---- Final output test ----
   const sampleAnswers = { severity: "moderate", duration: "1-3 days", additional: "chills", history: "none" };
-  const finalOutput = buildFinalOutput(symptom, sampleAnswers);
+  const finalOutput = buildFinalOutput(symptom, sampleAnswers, "en");
 
   return (
     <main className="min-h-screen bg-gray-950 px-4 py-12 space-y-6 max-w-3xl mx-auto">
@@ -163,7 +164,7 @@ export default function TestPage() {
       </SectionCard>
 
       {/* Voice match test */}
-      <SectionCard title="Voice Match (questionFlow.matchVoiceToOption)">
+      <SectionCard title="Voice Match (matchVoiceToOption — utils/matchVoiceInput)">
         <input
           id="test-voice-input"
           value={voiceInput}

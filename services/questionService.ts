@@ -1,5 +1,5 @@
-import { getNextQuestion as getFallbackQuestion } from "../questionFlow";
-import type { QuestionContext, QuestionStep } from "../types";
+import { getNextQuestion as getFallbackQuestion } from "@/components/ai-question-engine/questionFlow";
+import type { QuestionContext, QuestionStep } from "@/components/ai-question-engine/types";
 
 /**
  * Question Service

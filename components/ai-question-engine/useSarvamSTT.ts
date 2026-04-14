@@ -10,6 +10,24 @@
 import { useCallback, useRef, useState } from "react";
 import type { Language } from "./types";
 
+// Type definitions for experimental Web Speech API
+interface SpeechRecognition extends EventTarget {
+  lang: string;
+  interimResults: boolean;
+  maxAlternatives: number;
+  continuous: boolean;
+  start(): void;
+  stop(): void;
+  abort(): void;
+  onresult: (event: any) => void;
+  onerror: (event: any) => void;
+  onend: () => void;
+}
+
+interface SpeechRecognitionStatic {
+  new (): SpeechRecognition;
+}
+
 const SARVAM_LANG_CODE: Record<Language, string> = {
   en: "en-IN",
   hi: "hi-IN",
@@ -132,8 +150,8 @@ export function useSarvamSTT(): UseSarvamSTTReturn {
       return new Promise((resolve, reject) => {
         const SpeechRecognition =
           (typeof window !== "undefined" &&
-            (window.SpeechRecognition ||
-              (window as unknown as { webkitSpeechRecognition: typeof SpeechRecognition }).webkitSpeechRecognition)) ||
+            ((window as any).SpeechRecognition ||
+              (window as any).webkitSpeechRecognition)) as SpeechRecognitionStatic ||
           null;
 
         if (!SpeechRecognition) {
@@ -177,21 +195,33 @@ export function useSarvamSTT(): UseSarvamSTTReturn {
 
   const startRecording = useCallback(
     async (language: Language): Promise<void> => {
-      try {
-        if (lastFailedAtRef.current !== null) {
-          const timeSinceFailure = Date.now() - lastFailedAtRef.current;
-          if (timeSinceFailure < 30000) {
-            throw new Error("Skipping Sarvam STT (waiting for 30s cooldown)");
-          }
+      // Check if Sarvam is in cooldown
+      const isCooldown = lastFailedAtRef.current !== null && 
+        (Date.now() - lastFailedAtRef.current) < 30000;
+      
+      if (isCooldown) {
+        // Cooldown active — go directly to browser STT (not a mic issue)
+        console.log("[STT] Sarvam in cooldown, using browser STT directly.");
+        setError("Using browser STT (Sarvam in cooldown)");
+        try {
+          await startBrowserSTT(language);
+        } catch (browserErr) {
+          setError("Voice input not available");
+          console.warn("[STT] Browser STT also failed:", browserErr);
         }
+        return;
+      }
+      
+      try {
         await startMediaRecorder(language);
         
         if (lastFailedAtRef.current !== null) {
           console.log("[STT] Sarvam API recovered successfully.");
           lastFailedAtRef.current = null;
         }
-      } catch {
-        // Mic denied — try browser STT directly (it has its own permission flow)
+      } catch (micErr) {
+        // Genuine mic permission denied — try browser STT (it has its own permission flow)
+        console.warn("[STT] Mic access failed, trying browser STT:", micErr);
         try {
           await startBrowserSTT(language);
         } catch (browserErr) {
@@ -204,21 +234,15 @@ export function useSarvamSTT(): UseSarvamSTTReturn {
   );
 
   const stopRecording = useCallback(async (): Promise<string> => {
-    // If MediaRecorder is running, stop it (returns transcript)
+    // If MediaRecorder is running, stop it (returns transcript from Sarvam)
     if (
       mediaRecorderRef.current &&
       mediaRecorderRef.current.state !== "inactive"
     ) {
       const text = await stopMediaRecorder();
-      if (text) return text;
-
-      // If Sarvam STT returned empty, try browser STT
-      try {
-        const browserText = await startBrowserSTT(activeLanguageRef.current);
-        return browserText;
-      } catch {
-        return "";
-      }
+      // Return whatever we got — empty string triggers retry flow in handleVoiceToggle
+      // Do NOT auto-start a new browser STT here (user already stopped talking)
+      return text;
     }
 
     // If browser recognition is running, stop it
@@ -228,7 +252,7 @@ export function useSarvamSTT(): UseSarvamSTTReturn {
     }
 
     return transcript;
-  }, [stopMediaRecorder, startBrowserSTT, transcript]);
+  }, [stopMediaRecorder, transcript]);
 
   const cancelRecording = useCallback(() => {
     if (
